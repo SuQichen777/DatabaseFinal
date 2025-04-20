@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>List of People</h2>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+    </tr>
+    {% for item in data %}
+    <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.age }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Add New Person</h3>
+<form method="POST" action="{{ url_for('add') }}">
+    Name: <input type="text" name="name" required><br>
+    Age: <input type="number" name="age" required><br>
+    <input type="submit" value="Add">
+</form>
+{% endblock %}
