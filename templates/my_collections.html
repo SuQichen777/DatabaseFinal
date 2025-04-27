@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}My Collections{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="sidebar">
+        <a href="{{ url_for('profile.profile') }}">Settings</a>
+        <a href="{{ url_for('profile.my_trips') }}">My Trips</a>
+        <a href="{{ url_for('profile.my_collections') }}" class="active">My Collections</a>
+    </div>
+
+    <div class="main-content">
+        <h2>My Collections</h2>
+
+        {% if trips %}
+            <div class="collection-grid">
+                {% for trip in trips %}
+                    <a href="{{ url_for('trip.trip_detail', trip_id=trip.TripID) }}" class="collection-card">
+                        <h4>{{ trip.TripName }}</h4>
+                        <p>By User {{ trip.UserID }}</p> 
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No collections found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
