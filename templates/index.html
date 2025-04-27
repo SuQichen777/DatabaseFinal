@@ -1,29 +1,35 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Home - My Simple Flask App{% endblock %}
 
 {% block content %}
-<h2>List of People</h2>
+<h2>Welcome, {{ session['user_name'] }}!</h2>
 
-<table border="1">
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Age</th>
-    </tr>
-    {% for item in data %}
-    <tr>
-        <td>{{ item.id }}</td>
-        <td>{{ item.name }}</td>
-        <td>{{ item.age }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="user-info">
+    <h3>Your Profile</h3>
+    <ul>
+        <li><strong>Name:</strong> {{ user_data['Name'] }}</li>
+        <li><strong>Email:</strong> {{ user_data['Email'] }}</li>
+        <li><strong>Phone Number:</strong> {{ user_data['PhoneNumber'] }}</li>
+        <li><strong>Age:</strong> {{ user_data['Age'] }}</li>
+        <li><strong>Preference:</strong> {{ user_data['Preference'] }}</li>
+    </ul>
+</div>
 
-<h3>Add New Person</h3>
-<form method="POST" action="{{ url_for('add') }}">
-    Name: <input type="text" name="name" required><br>
-    Age: <input type="number" name="age" required><br>
-    <input type="submit" value="Add">
+<hr>
+
+<h3>Navigate:</h3>
+<ul>
+    <li><a href="{{ url_for('profile.profile') }}">My Profile</a></li>
+    <li><a href="{{ url_for('trips.trips_home') }}">Explore Trips</a></li>
+    <li><a href="{{ url_for('tour_guide.tour_guide_home') }}">Tour Guides</a></li>
+    <li><a href="{{ url_for('hotel.hotel_home') }}">Hotels</a></li>
+    <li><a href="{{ url_for('destination.destination_home') }}">Destinations</a></li>
+</ul>
+
+<hr>
+
+<form action="{{ url_for('logout') }}" method="get">
+    <button type="submit">Logout</button>
 </form>
 {% endblock %}

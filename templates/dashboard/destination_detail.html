@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ destination.City }}</h1>
+
+<div style="display: flex; align-items: flex-start;">
+    <img src="{{ destination.ImageUrl or '/static/default-destination.jpg' }}" alt="Destination Image" style="width: 50%; height: auto;">
+
+    <div style="margin-left: 40px;">
+        <p><strong>DestinationID</strong><br>{{ destination.DestinationID }}</p>
+        <p><strong>City</strong><br>{{ destination.City }}</p>
+        <p><strong>Country</strong><br>{{ destination.Country }}</p>
+        <p><strong>Address</strong><br>{{ destination.DetailAddress }}</p>
+        <p><strong>Description</strong><br>{{ destination.DestinationDescription }}</p>
+    </div>
+</div>
+
+<form action="{{ url_for('cart.add_to_cart') }}" method="post">
+    <input type="hidden" name="item_type" value="destination">
+    <input type="hidden" name="item_id" value="{{ destination.DestinationID }}">
+    <button type="submit" style="position: fixed; bottom: 30px; right: 30px; background: black; color: white; font-size: 48px; border-radius: 12px; width: 64px; height: 64px;">+</button>
+</form>
+{% endblock %}

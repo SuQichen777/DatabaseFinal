@@ -1,0 +1,8 @@
+CREATE TABLE `audit_log` (
+  `log_id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `action` VARCHAR(50) NOT NULL,
+  `table_name` VARCHAR(50) NOT NULL,
+  `record_id` VARCHAR(50) NOT NULL,
+  `action_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

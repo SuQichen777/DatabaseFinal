@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Trip Detail{% endblock %}
+
+{% block content %}
+<div class="trip-detail-container">
+  <!-- Trip Header -->
+  <div class="trip-header">
+    <h2>Here is the Trip Name</h2>
+    <p>Status: <span id="trip-status">{{ trip.Status }}</span></p>
+    <p>Trip ID: {{ trip.TripID }}</p>
+    <p>Time: {{ trip.StartDate }} - {{ trip.EndDate }}</p>
+  </div>
+
+  <div class="trip-body">
+    <!-- Left: Schedule -->
+    <div class="trip-schedule" id="schedule-list">
+      <!-- AJAX will populate schedule list here -->
+    </div>
+
+    <!-- Right: Shopping Cart + Add Form -->
+    <div class="trip-right">
+      <div class="shopping-cart">
+        <h3>Unscheduled Items</h3>
+        <ul id="unscheduled-list">
+          <!-- AJAX will populate unscheduled list here -->
+        </ul>
+      </div>
+
+      <div class="add-new-schedule">
+        <h3>Add New Schedule</h3>
+        <form id="add-schedule-form">
+          <input type="text" name="name" placeholder="Name" required>
+          <select name="type" required>
+            <option value="">Select Type</option>
+            <option value="Hotel">Hotel</option>
+            <option value="Activity">Activity</option>
+            <option value="Destination">Destination</option>
+            <option value="Tour Guide">Tour Guide</option>
+          </select>
+          <input type="date" name="time">
+          <input type="number" name="expense" placeholder="Expense (optional)">
+          <input type="text" name="description" placeholder="Description (optional)">
+          <button type="submit">Add</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Total Expense + Buttons -->
+  <div class="trip-footer">
+    <div>
+      <span>Total Expense: $<span id="total-expense">{{ total_expense.Amount if total_expense else 0.00 }}</span></span>
+    </div>
+    <div class="trip-actions">
+      <button id="mark-complete-btn">Mark as Completed</button>
+      <button id="publish-btn">Publish</button>
+    </div>
+  </div>
+
+  <!-- Modal for editing -->
+  <div id="edit-modal" style="display:none;">
+    <form id="edit-schedule-form">
+      <input type="text" name="name" id="edit-name" required>
+      <select name="type" id="edit-type" required>
+        <option value="">Select Type</option>
+        <option value="Hotel">Hotel</option>
+        <option value="Activity">Activity</option>
+        <option value="Destination">Destination</option>
+        <option value="Tour Guide">Tour Guide</option>
+      </select>
+      <input type="date" name="time" id="edit-time">
+      <input type="number" name="expense" id="edit-expense" placeholder="Expense (optional)">
+      <input type="text" name="description" id="edit-description" placeholder="Description (optional)">
+      <input type="hidden" id="edit-schedule-id">
+      <div>
+        <button type="submit">Confirm Changes</button>
+        <button type="button" onclick="closeModal()">Disregard Changes</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<!-- Some basic css for modal -->
+<style>
+#edit-modal {
+  position: fixed;
+  background: white;
+  padding: 20px;
+  border: 1px solid black;
+  top: 20%;
+  left: 30%;
+  width: 40%;
+  z-index: 999;
+}
+</style>
+<script src="{{ url_for('static', filename='js/trip_detail.js') }}"></script>
+{% endblock %}

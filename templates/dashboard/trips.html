@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Trips{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <a href="{{ url_for('trips.trips_home') }}" class="{% if request.path.startswith('/trips') %}active{% endif %}">Trips</a>
+        <a href="{{ url_for('destination.destination_home') }}" class="{% if request.path.startswith('/destination') %}active{% endif %}">Destination</a>
+        <a href="{{ url_for('tour_guide.tour_guide_home') }}" class="{% if request.path.startswith('/tour_guide') %}active{% endif %}">Tour Guide</a>
+        <a href="{{ url_for('hotel.hotel_home') }}" class="{% if request.path.startswith('/hotel') %}active{% endif %}">Hotel</a>
+    </div>
+
+    <div class="main-content">
+        <div class="search-bar">
+            <form method="GET" action="{{ url_for('trips.trips_home') }}">
+                <input type="text" name="search" placeholder="Search by Trip Name...">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <div class="list-section">
+            {% for trip in trips %}
+                <a class="list-item" href="{{ url_for('trips.trip_detail', trip_id=trip.TripID) }}">
+                    {{ trip.TripName }} ({{ trip.StartDate }} - {{ trip.EndDate }})
+                </a>
+            {% else %}
+                <p>No trips found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

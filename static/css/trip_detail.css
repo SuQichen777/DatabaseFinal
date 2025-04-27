@@ -1,0 +1,54 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.top-bar {
+    background: #f0f0f0;
+    padding: 10px;
+    text-align: right;
+}
+
+.btn {
+    margin-left: 10px;
+    padding: 8px 12px;
+    background-color: black;
+    color: white;
+    border: none;
+    text-decoration: none;
+}
+
+.container {
+    display: flex;
+}
+
+.left-section {
+    width: 65%;
+    padding: 20px;
+}
+
+.right-section {
+    width: 35%;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+}
+
+.day-block {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.expense-bar {
+    margin-top: 30px;
+}
+
+.cart-item {
+    margin-bottom: 10px;
+}
+
+.cart-item .edit-link {
+    color: blue;
+    text-decoration: underline;
+}
