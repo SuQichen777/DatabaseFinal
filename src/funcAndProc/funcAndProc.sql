@@ -262,3 +262,18 @@ BEGIN
     FROM Transportation
     WHERE TripID = p_TripID AND StartDate IS NULL;
 END;
+
+DROP PROCEDURE IF EXISTS sp_get_random_related_trips;
+CREATE PROCEDURE sp_get_random_related_trips(IN p_UserID INT, IN p_ExcludeTripID INT, IN p_Limit INT)
+BEGIN
+    SELECT Trip.TripID, Trip.TripName
+    FROM Trip
+    LEFT JOIN Booking ON Trip.TripID = Booking.TripID
+    LEFT JOIN CurrentStatus ON Booking.StatusID = CurrentStatus.StatusID
+    WHERE Trip.UserID != p_UserID
+      AND Trip.TripID != p_ExcludeTripID
+      AND CurrentStatus.IsConfirmed = 1
+    ORDER BY RAND()
+    LIMIT p_Limit;
+END;
+

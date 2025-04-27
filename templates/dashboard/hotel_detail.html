@@ -4,12 +4,12 @@
 <h1>{{ hotel.HotelName }}</h1>
 
 <div style="display: flex; align-items: flex-start;">
-    <img src="{{ hotel.ImageUrl or '/static/default-hotel.jpg' }}" alt="Hotel Image" style="width: 50%; height: auto;">
+    <img src="{{ hotel.ImageUrl or '/static/images/example.jpg' }}" alt="Hotel Image" style="width: 50%; height: auto;">
 
     <div style="margin-left: 40px;">
         <p><strong>HotelID</strong><br>{{ hotel.HotelID }}</p>
         <p><strong>Hotel Name</strong><br>{{ hotel.HotelName }}</p>
-        <p><strong>Price</strong><br>258/Night</p>  {# 可以动态替换，如果有价格字段 #}
+        <p><strong>Price</strong><br>2{{ hotel.Price }}</p>
         <p><strong>Address</strong><br>{{ hotel.HotelAddress }}</p>
         <p><strong>Room Availability</strong><br>{{ hotel.RoomDescription }}</p>
     </div>
