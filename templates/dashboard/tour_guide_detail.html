@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ guide.GuideName }}</h1>
+
+<div style="display: flex; align-items: flex-start;">
+    <img src="{{ guide.ImageUrl or '/static/default-guide.jpg' }}" alt="Guide Image" style="width: 50%; height: auto;">
+
+    <div style="margin-left: 40px;">
+        <p><strong>GuideID</strong><br>{{ guide.GuideID }}</p>
+        <p><strong>Name</strong><br>{{ guide.GuideName }}</p>
+        <p><strong>Language</strong><br>{{ guide.Languages }}</p>
+        <p><strong>Experience Year</strong><br>{{ guide.ExperienceYrs }} years</p>
+        <p><strong>Phone</strong><br>{{ guide.GuidePhone }}</p>
+        <p><strong>Email</strong><br>{{ guide.GuideEmail }}</p>
+    </div>
+</div>
+
+<form action="{{ url_for('cart.add_to_cart') }}" method="post">
+    <input type="hidden" name="item_type" value="guide">
+    <input type="hidden" name="item_id" value="{{ guide.GuideID }}">
+    <button type="submit" style="position: fixed; bottom: 30px; right: 30px; background: black; color: white; font-size: 48px; border-radius: 12px; width: 64px; height: 64px;">+</button>
+</form>
+{% endblock %}
