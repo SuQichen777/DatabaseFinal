@@ -1,11 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}My Simple Flask App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="margin: 20px;">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}" role="alert" style="padding: 10px; background-color: {% if category == 'danger' %}#f8d7da{% elif category == 'success' %}#d4edda{% else %}#cce5ff{% endif %}; color: #000; border-radius: 6px; margin-bottom: 10px;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  
+
     <header>
         <h1>My Website</h1>
         <nav>
@@ -24,4 +39,5 @@
         <p>© 2025 My Website</p>
     </footer> -->
 </body>
+
 </html>
