@@ -522,8 +522,14 @@ def add_schedule(trip_id):
         conn.close()
 
 # link for modifying trip
+from flask import jsonify
+
 @trips_bp.route('/<int:trip_id>/get_item_detail')
 def get_item_detail(trip_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
     item_type = request.args.get('type')
     item_id = request.args.get('id')
 
@@ -531,6 +537,16 @@ def get_item_detail(trip_id):
     cursor = conn.cursor()
 
     try:
+        cursor.execute("""
+            SELECT Trip.UserID
+            FROM Trip
+            WHERE TripID = %s
+        """, (trip_id,))
+        trip = cursor.fetchone()
+
+        if not trip or trip['UserID'] != user_id:
+            return jsonify({'error': 'Forbidden'}), 403
+
         if item_type == 'Activity':
             cursor.execute("SELECT ActivityName AS name, ActivityDescription AS description, StartDate AS start_date FROM Activity WHERE ActivityID = %s", (item_id,))
         elif item_type == 'Accommodation':
@@ -538,17 +554,18 @@ def get_item_detail(trip_id):
         elif item_type == 'Transportation':
             cursor.execute("SELECT TransportationType AS name, StartingPoint AS description, StartDate AS start_date FROM Transportation WHERE TransportationID = %s", (item_id,))
         else:
-            return {'error': 'Invalid type'}, 400
+            return jsonify({'error': 'Invalid type'}), 400
 
         item = cursor.fetchone()
         if item:
             return jsonify(item)
         else:
-            # return {'error': 'Item not found'}, 404
             return jsonify({'error': 'Item not found'}), 404
+
     finally:
         cursor.close()
         conn.close()
+
 
 @trips_bp.route('/<int:trip_id>/update_item/<string:item_type>/<int:item_id>', methods=['POST'])
 def update_item(trip_id, item_type, item_id):
