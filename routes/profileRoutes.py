@@ -98,7 +98,10 @@ def my_collections():
     cursor = conn.cursor()
     cursor.callproc('sp_get_collected_trips_by_user', (session['user_id'],))
     collections = cursor.fetchall()
+    userID = session['user_id']
+    cursor.execute('SELECT * FROM Users WHERE UserID = %s', (userID,))
+    user_info = cursor.fetchone()
     cursor.close()
     conn.close()
 
-    return render_template('my_collections.html', trips=collections)
+    return render_template('my_collections.html', trips=collections, user=user_info)

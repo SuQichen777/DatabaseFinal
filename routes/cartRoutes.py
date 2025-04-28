@@ -80,6 +80,18 @@ def find_or_create_pending_trip(user_id):
     conn.close()
     return trip_id
 
+@cart_bp.route('/current', methods=['GET'])
+def view_cart():
+    # check if user is logged in
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    trip_id = find_or_create_pending_trip(user_id)
+    # redirect to the trip page
+    return redirect(url_for('trips.trip_detail', trip_id=trip_id))
+
 
 def add_hotel_to_trip(trip_id, hotel_id):
     conn = get_db_connection()
