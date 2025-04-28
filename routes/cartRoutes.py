@@ -90,7 +90,18 @@ def add_hotel_to_trip(trip_id, hotel_id):
             INSERT INTO Accommodation (TripID, HotelID, CheckInDate, CheckOutDate)
             VALUES (%s, %s, NULL, NULL)
         """, (trip_id, hotel_id))
-
+        accommodation_id = cursor.lastrowid
+        # add expense 0
+        cursor.execute("""
+        SELECT TotalExpenseID FROM TotalExpense WHERE TripID = %s
+        """, (trip_id,))
+        total_expense = cursor.fetchone()
+        if total_expense:
+            cursor.execute("""
+                INSERT INTO AccommodationExpense (AccommodationID, TotalExpenseID, Amount, ExpenseDescription)
+                VALUES (%s, %s, 0, %s)
+            """, (accommodation_id, total_expense['TotalExpenseID'], 'Accommodation Expense'))
+        
         conn.commit()
 
     except Exception as e:
@@ -149,6 +160,18 @@ def add_activity_to_trip(trip_id, destination_id):
             VALUES (%s, %s, %s, %s, NULL, NULL)
         """, (trip_id, destination_id, activity_name, 'Auto generated activity'))
 
+        activity_id = cursor.lastrowid
+        # add expense 0
+        cursor.execute("""
+            SELECT TotalExpenseID FROM TotalExpense WHERE TripID = %s
+        """, (trip_id,))
+        total_expense = cursor.fetchone()
+        if total_expense:
+            cursor.execute("""
+                INSERT INTO ActivityExpense (ActivityID, TotalExpenseID, Amount, ExpenseDescription)
+                VALUES (%s, %s, 0, %s)
+            """, (activity_id, total_expense['TotalExpenseID'], 'Activity Expense'))
+            
         conn.commit()
 
     except Exception as e:

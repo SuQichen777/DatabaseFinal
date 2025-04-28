@@ -122,11 +122,15 @@ def trip_detail(trip_id):
         cursor.callproc('sp_get_reviews_by_trip', (trip_id,))
         reviews = cursor.fetchall()
         cursor.nextset()
+    reviewUserIDs = [review['UserID'] for review in reviews]
+    for review in reviews:
+        cursor.execute("SELECT Name FROM Users WHERE UserID = %s", (review['UserID'],))
+        user = cursor.fetchone()
+        review['UserName'] = user['Name'] if user else 'Unknown'
     # For other's trip, generate related trip
     cursor.callproc('sp_get_random_related_trips', (user_id, trip_id, 2))
     related_trips = cursor.fetchall()
     cursor.nextset()
-
 
     cursor.close()
     conn.close()
@@ -136,7 +140,6 @@ def trip_detail(trip_id):
     days = generate_days(trip_start_date, trip_end_date)
 
     schedule_by_day = {day: [] for day in days}
-
     for activity in activities:
         if activity['StartDate'] and activity['StartDate'] in schedule_by_day:
             schedule_by_day[activity['StartDate']].append({
@@ -145,15 +148,19 @@ def trip_detail(trip_id):
                 'description': activity.get('ActivityDescription', ''),
                 'id': activity['ActivityID']
             })
+        elif activity['StartDate'] and activity['StartDate'] not in schedule_by_day:
+            unscheduled_activities.append(activity)
 
     for accommodation in accommodations:
         if accommodation['CheckInDate'] and accommodation['CheckInDate'] in schedule_by_day:
             schedule_by_day[accommodation['CheckInDate']].append({
                 'type': 'Accommodation',
                 'name': accommodation['HotelName'],
-                'description': 'Hotel Stay',
+                'description': 'Accommodation Stay',
                 'id': accommodation['AccommodationID']
             })
+        elif accommodation['CheckInDate'] and accommodation['CheckInDate'] not in schedule_by_day:
+            unscheduled_accommodations.append(accommodation)
 
     for transportation in transportations:
         if transportation['StartDate'] and transportation['StartDate'] in schedule_by_day:
@@ -163,6 +170,8 @@ def trip_detail(trip_id):
                 'description': transportation.get('TransportationType', ''),
                 'id': transportation['TransportationID']
             })
+        elif transportation['StartDate'] and transportation['StartDate'] not in schedule_by_day:
+            unscheduled_transportations.append(transportation)
     
     # Add this to preprocess unscheduled items
     unscheduled_activities = [
@@ -372,13 +381,14 @@ def edit_trip(trip_id):
         new_start_date = request.form.get('start_date')
         new_end_date = request.form.get('end_date')
         new_guide_id = request.form.get('guide_id') or None
+        new_description = request.form.get('description') or None
 
         try:
             cursor.execute("""
                 UPDATE Trip
-                SET TripName = %s, StartDate = %s, EndDate = %s, GuideID = %s
+                SET TripName = %s, StartDate = %s, EndDate = %s, GuideID = %s, TripDes=%s
                 WHERE TripID = %s AND UserID = %s
-            """, (new_name, new_start_date, new_end_date, new_guide_id, trip_id, user_id))
+            """, (new_name, new_start_date, new_end_date, new_guide_id, new_description, trip_id, user_id))
             conn.commit()
             flash('Trip updated successfully!', 'success')
             return redirect(url_for('trips.trip_detail', trip_id=trip_id))
@@ -418,7 +428,7 @@ def add_schedule(trip_id):
     name = request.form.get('name')
     type_ = request.form.get('type')
     start_date = request.form.get('start_date') or None
-    expense = request.form.get('expense') or None
+    expense = request.form.get('expense') or 0
     description = request.form.get('description') or 'N/A'
 
     if not name or not type_:
@@ -452,16 +462,16 @@ def add_schedule(trip_id):
             """, (trip_id, name, description, start_date))
             activity_id = cursor.lastrowid
 
-            if expense:
+            
+            cursor.execute("""
+                SELECT TotalExpenseID FROM TotalExpense WHERE TripID = %s
+            """, (trip_id,))
+            total_expense = cursor.fetchone()
+            if total_expense:
                 cursor.execute("""
-                    SELECT TotalExpenseID FROM TotalExpense WHERE TripID = %s
-                """, (trip_id,))
-                total_expense = cursor.fetchone()
-                if total_expense:
-                    cursor.execute("""
-                        INSERT INTO ActivityExpense (ActivityID, TotalExpenseID, Amount, ExpenseDescription)
-                        VALUES (%s, %s, %s, %s)
-                    """, (activity_id, total_expense['TotalExpenseID'], expense, 'Activity Expense'))
+                    INSERT INTO ActivityExpense (ActivityID, TotalExpenseID, Amount, ExpenseDescription)
+                    VALUES (%s, %s, %s, %s)
+                """, (activity_id, total_expense['TotalExpenseID'], expense, 'Activity Expense'))
 
         elif type_ == 'Accommodation':
             cursor.execute("""
@@ -476,16 +486,15 @@ def add_schedule(trip_id):
             """, (trip_id, hotel_id, start_date))
             accommodation_id = cursor.lastrowid
 
-            if expense:
+            cursor.execute("""
+                SELECT TotalExpenseID FROM TotalExpense WHERE TripID = %s
+            """, (trip_id,))
+            total_expense = cursor.fetchone()
+            if total_expense:
                 cursor.execute("""
-                    SELECT TotalExpenseID FROM TotalExpense WHERE TripID = %s
-                """, (trip_id,))
-                total_expense = cursor.fetchone()
-                if total_expense:
-                    cursor.execute("""
-                        INSERT INTO AccommodationExpense (AccommodationID, TotalExpenseID, Amount, ExpenseDescription)
-                        VALUES (%s, %s, %s, %s)
-                    """, (accommodation_id, total_expense['TotalExpenseID'], expense, 'Accommodation Expense'))
+                    INSERT INTO AccommodationExpense (AccommodationID, TotalExpenseID, Amount, ExpenseDescription)
+                    VALUES (%s, %s, %s, %s)
+                """, (accommodation_id, total_expense['TotalExpenseID'], expense, 'Accommodation Expense'))
 
         elif type_ == 'Transportation':
             cursor.execute("""
@@ -494,16 +503,15 @@ def add_schedule(trip_id):
             """, (trip_id, start_date, description, 'Unknown', name))
             transportation_id = cursor.lastrowid
 
-            if expense:
+            cursor.execute("""
+                SELECT TotalExpenseID FROM TotalExpense WHERE TripID = %s
+            """, (trip_id,))
+            total_expense = cursor.fetchone()
+            if total_expense:
                 cursor.execute("""
-                    SELECT TotalExpenseID FROM TotalExpense WHERE TripID = %s
-                """, (trip_id,))
-                total_expense = cursor.fetchone()
-                if total_expense:
-                    cursor.execute("""
-                        INSERT INTO TransportationExpense (TransportationID, TotalExpenseID, Amount, ExpenseDescription)
-                        VALUES (%s, %s, %s, %s)
-                    """, (transportation_id, total_expense['TotalExpenseID'], expense, 'Transportation Expense'))
+                    INSERT INTO TransportationExpense (TransportationID, TotalExpenseID, Amount, ExpenseDescription)
+                    VALUES (%s, %s, %s, %s)
+                """, (transportation_id, total_expense['TotalExpenseID'], expense, 'Transportation Expense'))
 
         else:
             flash('Invalid type.', 'danger')
@@ -537,92 +545,211 @@ def get_item_detail(trip_id):
     cursor = conn.cursor()
 
     try:
-        cursor.execute("""
-            SELECT Trip.UserID
-            FROM Trip
-            WHERE TripID = %s
-        """, (trip_id,))
-        trip = cursor.fetchone()
-
-        if not trip or trip['UserID'] != user_id:
-            return jsonify({'error': 'Forbidden'}), 403
-
+        # name, description, start_date, expense
+        # Activity: duration
+        # Accommodation: checkout_date
+        # Transportation: start_point, end_point
         if item_type == 'Activity':
-            cursor.execute("SELECT ActivityName AS name, ActivityDescription AS description, StartDate AS start_date FROM Activity WHERE ActivityID = %s", (item_id,))
+            cursor.execute("""
+                SELECT ActivityName AS name, 
+                       ActivityDescription AS description, 
+                       StartDate AS start_date,
+                       Duration AS duration,
+                       ActivityExpense.Amount AS expense 
+                FROM Activity
+                LEFT JOIN ActivityExpense ON Activity.ActivityID = ActivityExpense.ActivityID
+                WHERE Activity.ActivityID = %s
+            """, (item_id,))
+            result = cursor.fetchone()
+            if result:
+                name = result['name']
+                description = result['description']
+                start_date = result['start_date']
+                duration = result['duration']
+                expense = result['expense']
+                if isinstance(start_date, str):
+                    formatted_start_date = start_date
+                elif start_date:
+                    formatted_start_date = start_date.strftime('%Y-%m-%d')
+                else:
+                    formatted_start_date = ''
+                return jsonify({
+                    'name': name,
+                    'description': description,
+                    'start_date': formatted_start_date,
+                    'duration': duration,
+                    'expense': expense
+                })
+        # name, description, start_date, expense
+        # Accommodation: checkout_date
         elif item_type == 'Accommodation':
-            cursor.execute("SELECT Hotel.HotelName AS name, Hotel.RoomDescription AS description, Accommodation.CheckInDate AS start_date FROM Accommodation JOIN Hotel ON Accommodation.HotelID = Hotel.HotelID WHERE Accommodation.AccommodationID = %s", (item_id,))
+            cursor.execute("""
+                SELECT Hotel.HotelName AS name, 
+                       Hotel.RoomDescription AS description,
+                       Accommodation.CheckInDate AS start_date,
+                       Accommodation.CheckOutDate AS checkout_date,
+                       AccommodationExpense.Amount AS expense
+                FROM Accommodation
+                LEFT JOIN AccommodationExpense ON Accommodation.AccommodationID = AccommodationExpense.AccommodationID
+                LEFT JOIN Hotel ON Accommodation.HotelID = Hotel.HotelID
+                WHERE Accommodation.AccommodationID = %s
+            """, (item_id,))
+            result = cursor.fetchone()
+            if result:
+                name = result['name']
+                description = result['description']
+                start_date = result['start_date']
+                checkout_date = result['checkout_date']
+                expense = result['expense']
+                if isinstance(start_date, str):
+                    formatted_start_date = start_date
+                elif start_date:
+                    formatted_start_date = start_date.strftime('%Y-%m-%d')
+                else:
+                    formatted_start_date = ''
+                if isinstance(checkout_date, str):
+                    formatted_checkout_date = checkout_date
+                elif checkout_date:
+                    formatted_checkout_date = checkout_date.strftime('%Y-%m-%d')
+                else:
+                    formatted_checkout_date = ''
+                return jsonify({
+                    'name': name,
+                    'description': description,
+                    'start_date': formatted_start_date,
+                    'checkout_date': formatted_checkout_date,
+                    'expense': expense
+                });
+                    
+        # name, description, start_date, expense
+        # Transportation: start_point, end_point
         elif item_type == 'Transportation':
-            cursor.execute("SELECT TransportationType AS name, StartingPoint AS description, StartDate AS start_date FROM Transportation WHERE TransportationID = %s", (item_id,))
+            cursor.execute("""
+                SELECT TransportationType AS name,
+                       StartingPoint AS start_point,
+                       EndingPoint AS end_point,
+                       StartDate AS start_date,
+                       TransportationExpense.Amount AS expense
+                FROM Transportation
+                LEFT JOIN TransportationExpense ON Transportation.TransportationID = TransportationExpense.TransportationID
+                WHERE Transportation.TransportationID = %s
+            """, (item_id,))
+            result = cursor.fetchone()
+            # print(result)
+            description = f"{result['start_point']} → {result['end_point']}"
+            if result:
+                name = result['name']
+                start_point = result['start_point']
+                end_point = result['end_point']
+                start_date = result['start_date']
+                expense = result['expense']
+                if isinstance(start_date, str):
+                    formatted_start_date = start_date
+                elif start_date:
+                    formatted_start_date = start_date.strftime('%Y-%m-%d')
+                else:
+                    formatted_start_date = ''
+                return jsonify({
+                    'name': name,
+                    'description': description,
+                    'start_date': formatted_start_date,
+                    'expense': expense,
+                    'start_point': start_point,
+                    'end_point': end_point
+                })
         else:
-            return jsonify({'error': 'Invalid type'}), 400
-
-        item = cursor.fetchone()
-        if item:
-            return jsonify(item)
-        else:
-            return jsonify({'error': 'Item not found'}), 404
+            return jsonify({'error': 'Invalid item type'}), 400
 
     finally:
         cursor.close()
         conn.close()
 
+    return jsonify({'error': 'Item not found'}), 404
 
 @trips_bp.route('/<int:trip_id>/update_item/<string:item_type>/<int:item_id>', methods=['POST'])
 def update_item(trip_id, item_type, item_id):
     user_id = session.get('user_id')
     if not user_id:
-        return {'error': 'Unauthorized'}, 401
+        return jsonify({'error': 'Unauthorized'}), 401
 
     data = request.get_json()
     name = data.get('name')
     description = data.get('description')
     start_date = data.get('start_date') or None
+    expense = data.get('expense') or None
+    print(name, description, start_date, expense)
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
         if item_type == 'Activity':
+            duration = data.get('duration') or None
             cursor.execute("""
                 UPDATE Activity
-                SET ActivityName = %s, ActivityDescription = %s, StartDate = %s
+                SET ActivityName = %s, ActivityDescription = %s, StartDate = %s, Duration = %s
                 WHERE ActivityID = %s
-            """, (name, description, start_date, item_id))
+            """, (name, description, start_date, duration, item_id))
+            print(f'Current item id: {item_id}, name: {name}, description: {description}, start_date: {start_date}, duration: {duration}, expense: {expense}')            
+            
+            if expense:
+                # check whether the expense is already in the table
+                cursor.execute("""
+                    UPDATE ActivityExpense
+                    SET Amount = %s
+                    WHERE ActivityID = %s
+                """, (expense, item_id))
 
         elif item_type == 'Accommodation':
+            checkout_date = data.get('checkout_date') or None
             cursor.execute("""
                 UPDATE Hotel
                 SET HotelName = %s, RoomDescription = %s
-                WHERE HotelID = (
-                    SELECT HotelID FROM Accommodation WHERE AccommodationID = %s
-                )
+                WHERE HotelID = (SELECT HotelID FROM Accommodation WHERE AccommodationID = %s)
             """, (name, description, item_id))
             cursor.execute("""
                 UPDATE Accommodation
-                SET CheckInDate = %s
+                SET CheckInDate = %s, CheckOutDate = %s
                 WHERE AccommodationID = %s
-            """, (start_date, item_id))
+            """, (start_date, checkout_date, item_id))
+            print(f'Current item id: {item_id}, name: {name}, description: {description}, start_date: {start_date}, checkout_date: {checkout_date}, expense: {expense}')
+            if expense:
+                cursor.execute("""
+                    UPDATE AccommodationExpense
+                    SET Amount = %s
+                    WHERE AccommodationID = %s
+                """, (expense, item_id))
 
         elif item_type == 'Transportation':
+            start_point = data.get('start_point')
+            end_point = data.get('end_point')
             cursor.execute("""
                 UPDATE Transportation
-                SET TransportationType = %s, StartingPoint = %s, StartDate = %s
+                SET TransportationType = %s, StartingPoint = %s, EndingPoint = %s, StartDate = %s
                 WHERE TransportationID = %s
-            """, (name, description, start_date, item_id))
+            """, (name, start_point, end_point, start_date, item_id))
+            print(f'Current item id: {item_id}, name: {name}, start_point: {start_point}, end_point: {end_point}, start_date: {start_date}, expense: {expense}')
+            if expense:
+                cursor.execute("""
+                    UPDATE TransportationExpense
+                    SET Amount = %s
+                    WHERE TransportationID = %s
+                """, (expense, item_id))
 
         else:
-            return {'error': 'Invalid type'}, 400
+            return jsonify({'error': 'Invalid item type'}), 400
 
         conn.commit()
-        return {'success': True}
-    
+        return jsonify({'success': True})
+
     except Exception as e:
         conn.rollback()
         print(e)
-        return {'error': 'Database error'}, 500
+        return jsonify({'error': 'Database error'}), 500
     finally:
         cursor.close()
         conn.close()
+
 
 # Trip Delete
 @trips_bp.route('/<int:trip_id>/delete', methods=['POST'])

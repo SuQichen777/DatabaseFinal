@@ -198,7 +198,7 @@ END;
 DROP PROCEDURE IF EXISTS sp_get_collected_trips_by_user;
 CREATE PROCEDURE sp_get_collected_trips_by_user (IN p_UserID INT)
 BEGIN
-    SELECT Trip.*
+    SELECT DISTINCT Trip.*
     FROM Review
     JOIN Trip ON Review.TripID = Trip.TripID
     WHERE Review.UserID = p_UserID;
@@ -251,7 +251,7 @@ BEGIN
     SELECT A.*, H.HotelName
     FROM Accommodation A
     JOIN Hotel H ON A.HotelID = H.HotelID
-    WHERE A.TripID = p_TripID AND (CheckInDate IS NULL OR CheckOutDate IS NULL);
+    WHERE A.TripID = p_TripID AND (CheckInDate IS NULL);
 END;
 
 

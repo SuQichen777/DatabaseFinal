@@ -382,3 +382,78 @@ body {
 .logout-button:hover {
     background-color: #ff4d4d;
 }
+
+.auth-form-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.auth-form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-form-container label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.auth-form-container input[type="text"],
+.auth-form-container input[type="email"],
+.auth-form-container input[type="password"],
+.auth-form-container input[type="number"],
+.auth-form-container textarea {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fafafa;
+    font-size: 14px;
+}
+
+.auth-form-container input[type="submit"] {
+    padding: 12px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-form-container input[type="submit"]:hover {
+    background-color: #333;
+}
+
+.auth-form-container p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.auth-form-container a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.auth-form-container a:hover {
+    text-decoration: underline;
+}
+
+.auth-form-container ul {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 15px;
+}

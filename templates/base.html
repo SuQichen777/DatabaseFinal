@@ -2,40 +2,56 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}My Simple Flask App{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8">
+  <title>{% block title %}PlanYourTrip Web App{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div style="margin: 20px;">
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }}" role="alert" style="padding: 10px; background-color: {% if category == 'danger' %}#f8d7da{% elif category == 'success' %}#d4edda{% else %}#cce5ff{% endif %}; color: #000; border-radius: 6px; margin-bottom: 10px;">
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-  
 
-    <header>
-        <h1>My Website</h1>
-        <nav>
+
+  <header>
+    <h1>
+      <a href="{{ url_for('index') }}" style="text-decoration: none; color: #333; cursor: pointer;"
+        class="small-card">PlanYourTrip Web App</a>
+    </h1>
+    <!-- <nav>
             <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('login') }}">Login</a>
             <a href="{{ url_for('register') }}">Register</a>
-        </nav>
-    </header>
+        </nav> -->
+  </header>
 
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+  <div style="position: absolute; top: 20px; right: 20px;">
+    <div class="small-card">
+      <h3>
+        <!-- <p style="font-size: 14px;">View and edit your personal information.</p> -->
+        <a href="{{ url_for('profile.profile') }}" style="text-decoration: none; color: #333; cursor: pointer;">👤
+          Personal Profile</a>
+      </h3>
+    </div>
+  </div>
+  <br>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div style="margin: 20px;">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert"
+      style="padding: 10px; background-color: {% if category == 'danger' %}#f8d7da{% elif category == 'success' %}#d4edda{% else %}#cce5ff{% endif %}; color: #000; border-radius: 6px; margin-bottom: 10px;">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
 
-    <!-- <footer>
+  <main>
+    <br>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- <footer>
         <p>© 2025 My Website</p>
     </footer> -->
 </body>

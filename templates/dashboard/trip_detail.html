@@ -15,7 +15,7 @@
                 <button type="submit" class="btn-danger">Delete Trip</button>
             </form>
             <a href="{{ url_for('trips.edit_trip', trip_id=trip.TripID) }}" class="btn-secondary"
-                style="margin-left: 10px;">Edit Trip</a>
+                style="margin-left: 10px; text-decoration: none; height: 18px;">Edit Trip</a>
             {% endif %}
         </div>
 
@@ -45,14 +45,14 @@
                     {% if schedule_by_day[day] %}
                     <ul>
                         {% for item in schedule_by_day[day] %}
-                        <li><strong>[{{ item.type }}]</strong> 
+                        <li><strong>[{{ item.type }}]</strong>
                             {% if is_owner and trip.IsCanceled %}
                             <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{ item.name }}</a>
                             {% else %}
                             <span>{{ item.name }}</span>
                             {% endif %}
-                             — {{ item.description }}
-                            </li>
+                            — {{ item.description }}
+                        </li>
                         {% endfor %}
                     </ul>
                     {% else %}
@@ -76,7 +76,7 @@
             {% if is_owner %}
             <div class="trip-actions">
                 <form method="post" action="{{ url_for('trips.mark_trip_as_completed', trip_id=trip.TripID) }}">
-                    <button class="btn-secondary" type="submit">Mark as Completed / Edit</button>
+                    <button class="btn-secondary" type="submit">Complete / Edit</button>
                 </form>
                 <form method="post" action="{{ url_for('trips.publish_trip', trip_id=trip.TripID) }}">
                     <button class="btn-primary" type="submit">Publish</button>
@@ -104,17 +104,20 @@
             <div class="unscheduled-items">
                 {% for item in unscheduled_activities %}
                 <p>
-                    [{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{ item.name }}</a>
+                    [{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{
+                        item.name }}</a>
                 </p>
                 {% endfor %}
                 {% for item in unscheduled_accommodations %}
                 <p>
-                    [{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{ item.name }}</a>
+                    [{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{
+                        item.name }}</a>
                 </p>
                 {% endfor %}
                 {% for item in unscheduled_transportations %}
-                <p>[
-                    {{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{ item.name }}</a>
+                <p>
+                    [{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{
+                        item.name }}</a>
                 </p>
                 {% endfor %}
             </div>
@@ -158,13 +161,9 @@
                 {% if related_trips %}
                 <ul>
                     {% for trip in related_trips %}
-                    <li>
-                        <a href="{{ url_for('trips.trip_detail', trip_id=trip.TripID) }}">{{ trip.TripName }}</a> -
-                        {% if trip.StartDate and trip.EndDate %}
-                        {{ trip.StartDate.strftime('%B %d, %Y') }} to {{ trip.EndDate.strftime('%B %d, %Y') }}
-                        {% else %}
-                        Unknown Dates
-                        {% endif %}
+                    <li class='small-card'>
+                        <a href="{{ url_for('trips.trip_detail', trip_id=trip.TripID) }}"
+                            style="text-decoration: none;">{{ trip.TripName }}</a>
                     </li>
                     {% endfor %}
                 </ul>
@@ -180,7 +179,7 @@
                 {% if reviews %}
                 <ul>
                     {% for review in reviews %}
-                    <li>{{ review.Comments }}</li>
+                    <li>{{ review.Comments }} - {{ review.UserName }}</li> 
                     {% endfor %}
                 </ul>
                 {% else %}
@@ -199,18 +198,13 @@
             <input type="hidden" name="item_type" id="item_type">
             <input type="hidden" name="item_id" id="item_id">
 
-            <label>Name:</label>
-            <input type="text" id="edit_name" name="name" required><br><br>
-
-            <label>Description:</label>
-            <input type="text" id="edit_description" name="description"><br><br>
-
-            <label>Start Date:</label>
-            <input type="date" id="edit_start_date" name="start_date"><br><br>
+            <div id="dynamicFormFields">
+            </div>
 
             <button type="button" onclick="submitEditForm()">Save</button>
             <button type="button" onclick="closeEditModal()">Cancel</button>
         </form>
+
     </div>
 
 </div>
@@ -230,7 +224,6 @@
 
     .trip-sidebar {
         flex: 0 0 35%;
-        max-height: 80vh;
         overflow-y: auto;
         border-left: 1px solid #ddd;
         padding-left: 20px;
@@ -239,6 +232,8 @@
     .trip-header h1 {
         font-size: 32px;
     }
+
+
 
     .trip-status {
         margin-left: 20px;
@@ -296,6 +291,12 @@
 
     .trip-actions button {
         margin-left: 10px;
+    }
+
+    .trip-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .btn-primary {
@@ -387,48 +388,123 @@
         document.getElementById('item_type').value = type;
         document.getElementById('item_id').value = id;
 
+        const formFields = document.getElementById('dynamicFormFields');
+        formFields.innerHTML = '';
+
+        formFields.innerHTML += `
+        <label>Name:</label>
+        <input type="text" id="edit_name" name="name" required><br><br>
+
+        <label>Description:</label>
+        <input type="text" id="edit_description" name="description"><br><br>
+
+        <label>Start Date:</label>
+        <input type="date" id="edit_start_date" name="start_date"><br><br>
+
+        <label>Expense:</label>
+        <input type="text" id="edit_expense" name="expense"><br><br>
+    `;
+
+        if (type === 'Accommodation') {
+            formFields.innerHTML += `
+            <label>Check-Out Date:</label>
+            <input type="date" id="edit_checkout_date" name="checkout_date"><br><br>
+        `;
+        } else if (type === 'Transportation') {
+            formFields.innerHTML += `
+            <label>Starting Point:</label>
+            <input type="text" id="edit_start_point" name="start_point"><br><br>
+            
+            <label>Ending Point:</label>
+            <input type="text" id="edit_end_point" name="end_point"><br><br>
+        `;
+        } else if (type === 'Activity') {
+            formFields.innerHTML += `
+            <label>Duration:</label>
+            <input type="text" id="edit_duration" name="duration"><br><br>
+        `;
+        }
+
         fetch(`/trips/{{ trip.TripID }}/get_item_detail?type=${type}&id=${id}`)
             .then(response => response.json())
-            .then(data => {
-                document.getElementById('edit_name').value = data.name || '';
-                document.getElementById('edit_description').value = data.description || '';
-                document.getElementById('edit_start_date').value = data.start_date || '';
-            })
+            .then(
+                data => {
+                    document.getElementById('edit_name').value = data.name || '';
+                    document.getElementById('edit_description').value = data.description || '';
+                    document.getElementById('edit_start_date').value = data.start_date || '';
+                    document.getElementById('edit_expense').value = data.expense || '';
+
+                    if (type === 'Accommodation') {
+                        document.getElementById('edit_checkout_date').value = data.checkout_date || '';
+                    } else if (type === 'Transportation') {
+                        document.getElementById('edit_start_point').value = data.start_point || '';
+                        document.getElementById('edit_end_point').value = data.end_point || '';
+                    } else if (type === 'Activity') {
+                        document.getElementById('edit_duration').value = data.duration || '';
+                    }
+                })
             .catch(error => {
                 alert('Failed to load item details.');
                 console.error(error);
             });
     }
 
+
     function closeEditModal() {
         document.getElementById('editModal').style.display = 'none';
     }
 
+
     function submitEditForm() {
         const tripId = '{{ trip.TripID }}';
-    const itemType = document.getElementById('item_type').value;
-    const itemId = document.getElementById('item_id').value;
-    const name = document.getElementById('edit_name').value;
-    const description = document.getElementById('edit_description').value;
-    const startDate = document.getElementById('edit_start_date').value;
+        const itemType = document.getElementById('item_type').value;
+        const itemId = document.getElementById('item_id').value;
 
-    fetch(`/trips/${tripId}/update_item/${itemType}/${itemId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, description, start_date: startDate })
-    }).then(response => {
-        if (response.ok) {
-            location.reload();
-        } else {
-            alert('Failed to update item.');
+        const name = document.getElementById('edit_name')?.value || '';
+        const description = document.getElementById('edit_description')?.value || '';
+        const startDate = document.getElementById('edit_start_date')?.value || '';
+        const expense = document.getElementById('edit_expense')?.value || '';
+
+        let extraData = {};
+
+        if (itemType === 'Accommodation') {
+            extraData.checkout_date = document.getElementById('edit_checkout_date')?.value || '';
+        } else if (itemType === 'Transportation') {
+            extraData.start_point = document.getElementById('edit_start_point')?.value || '';
+            extraData.end_point = document.getElementById('edit_end_point')?.value || '';
+        } else if (itemType === 'Activity') {
+            extraData.duration = document.getElementById('edit_duration')?.value || '';
         }
-    }).catch(error => {
-        console.error(error);
-        alert('Error updating item.');
-    });
-}
+
+        const bodyData = {
+            name,
+            description,
+            start_date: startDate,
+            expense,
+            ...extraData
+        };
+
+        fetch(`/trips/${tripId}/update_item/${itemType}/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bodyData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to update item.');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Error updating item.');
+            });
+    }
+
+
 </script>
 
 {% endblock %}
