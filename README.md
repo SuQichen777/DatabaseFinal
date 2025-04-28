@@ -21,7 +21,9 @@ python src/trigger/trigger.py
 ```bash
 python src/dbSecurity/dbSecurity.py
 ```
-to create users and grant permissions. You can change the `.env` file or the `config.py` file to set the database role you want to use. You can run `src/dbSecurity/testIdentity.py` to test whether the database role you are using is correct. If you are using the role of `app user`, you are expected to see an error message, but if you are using the role of `root` or `developer`, you are expected to see success messages.
+to create users and grant permissions. You can change the `.env` file or the `config.py` file to set the database role you want to use. 
+
+You can run `python src/dbSecurity/testIdentity.py` to test whether the database role you are using is correct. If you are using the role of `app user`, you are expected to see an error message, but if you are using the role of `root` or `developer`, you are expected to see success messages.
 
 - Finally, you can run the application using the following command:
 ```bash
@@ -42,7 +44,7 @@ There is a directory called `src/` that contains the database initialization scr
 ### Backend
 - `app.py`: The main Flask application file.
 - `config.py`: Configuration file for the Flask application.
-    - Please copy `.env.example` to `.env` and fill in the required values.
+    - Please copy `.env.example` to `.env` and fill in the required values if you haven't done so.
 - `src/`: Directory containing the source code from previous milestones.
     - `initializeDB/`: Directory for database initialization scripts.
         - `initDB.py`: Script to initialize the database.
