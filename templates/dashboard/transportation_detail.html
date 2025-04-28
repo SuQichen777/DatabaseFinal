@@ -4,11 +4,15 @@
 <h1>{{ transportation.StartingPoint }} → {{ transportation.EndingPoint }}</h1>
 
 <div style="display: flex; align-items: flex-start;">
-    <div style="margin-right: 40px;">
+    <div style="width: 50%;">
         <p><strong>TransportationID</strong><br>{{ transportation.TransportationID }}</p>
-        <p><strong>Start Time</strong><br>{{ transportation.StartDate }}</p>
-        <p><strong>Duration</strong><br>{{ transportation.Duration }} hours</p>
+        <p><strong>Start Time</strong><br>{{ transportation.StartDate or 'TBD' }}</p>
+        <p><strong>Duration</strong><br>{{ transportation.Duration or 'TBD' }} hours</p>
+    </div>
+
+    <div style="margin-left: 40px;">
         <p><strong>Type</strong><br>{{ transportation.TransportationType }}</p>
+        <p><strong>Trip ID</strong><br>{{ transportation.TripID or 'Unassigned' }}</p>
     </div>
 </div>
 

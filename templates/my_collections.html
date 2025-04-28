@@ -16,7 +16,7 @@
         {% if trips %}
             <div class="collection-grid">
                 {% for trip in trips %}
-                    <a href="{{ url_for('trip.trip_detail', trip_id=trip.TripID) }}" class="collection-card">
+                    <a href="{{ url_for('trips.trip_detail', trip_id=trip.TripID) }}" class="collection-card">
                         <h4>{{ trip.TripName }}</h4>
                         <p>By User {{ trip.UserID }}</p> 
                     </a>

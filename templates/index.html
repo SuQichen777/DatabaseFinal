@@ -1,35 +1,62 @@
 {% extends "base.html" %}
 
-{% block title %}Home - My Simple Flask App{% endblock %}
+{% block title %}Home - Plan Your Trip{% endblock %}
 
 {% block content %}
-<h2>Welcome, {{ session['user_name'] }}!</h2>
+<div style="position: relative;">
 
-<div class="user-info">
-    <h3>Your Profile</h3>
-    <ul>
-        <li><strong>Name:</strong> {{ user_data['Name'] }}</li>
-        <li><strong>Email:</strong> {{ user_data['Email'] }}</li>
-        <li><strong>Phone Number:</strong> {{ user_data['PhoneNumber'] }}</li>
-        <li><strong>Age:</strong> {{ user_data['Age'] }}</li>
-        <li><strong>Preference:</strong> {{ user_data['Preference'] }}</li>
-    </ul>
+    <!-- Personal Profile card at top right -->
+    <div style="position: absolute; top: 20px; right: 20px;">
+        <div class="small-card">
+            <h3>👤 Personal Profile</h3>
+            <p style="font-size: 14px;">View and edit your personal information.</p>
+            <a href="{{ url_for('profile.profile') }}">My Profile</a>
+        </div>
+    </div>
+
+    <!-- Main title -->
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1>http://planyourtrip.com</h1>
+        <p>Welcome, {{ session['user_name'] }}!</p>
+    </div>
+
+    <!-- Card Grid starts here -->
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">🌐</div>
+            <h3>Trip</h3>
+            <p>Your next trip starts here!</p>
+            <a class="card-link" href="{{ url_for('trips.trips_home') }}">Explore Trips</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">👥</div>
+            <h3>Tour guide</h3>
+            <p>We'll find a nice tour guide for you!</p>
+            <a class="card-link" href="{{ url_for('tour_guide.tour_guide_home') }}">Find Guides</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">🏨</div>
+            <h3>Hotel</h3>
+            <p>Let's find a great place to rest for you!</p>
+            <a class="card-link" href="{{ url_for('hotel.hotel_home') }}">Find Hotels</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">📍</div>
+            <h3>Destinations</h3>
+            <p>Where's your next trip?</p>
+            <a class="card-link" href="{{ url_for('destination.destination_home') }}">Explore Destinations</a>
+        </div>
+    </div>
+
+    <!-- Logout button -->
+    <div style="text-align: center; margin-top: 50px;">
+        <form action="{{ url_for('logout') }}" method="get">
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+
 </div>
-
-<hr>
-
-<h3>Navigate:</h3>
-<ul>
-    <li><a href="{{ url_for('profile.profile') }}">My Profile</a></li>
-    <li><a href="{{ url_for('trips.trips_home') }}">Explore Trips</a></li>
-    <li><a href="{{ url_for('tour_guide.tour_guide_home') }}">Tour Guides</a></li>
-    <li><a href="{{ url_for('hotel.hotel_home') }}">Hotels</a></li>
-    <li><a href="{{ url_for('destination.destination_home') }}">Destinations</a></li>
-</ul>
-
-<hr>
-
-<form action="{{ url_for('logout') }}" method="get">
-    <button type="submit">Logout</button>
-</form>
 {% endblock %}

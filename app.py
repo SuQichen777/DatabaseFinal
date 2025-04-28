@@ -48,7 +48,6 @@ def index():
 # Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    session.clear()
     if request.method == 'POST':
         form_token = request.form.get('csrf_token')
         if not form_token or form_token != session.get('csrf_token'):

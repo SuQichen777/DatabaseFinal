@@ -148,26 +148,20 @@ INSERT INTO TransportationExpense (TransportationID, TotalExpenseID, Amount, Exp
 INSERT INTO CurrentStatus (StatusID, IsConfirmed, IsPending, IsCanceled) VALUES
 (1, 1, 0, 0),  -- Confirmed
 (2, 0, 1, 0),  -- Pending
-(3, 0, 0, 1),  -- Canceled
-(4, 1, 0, 0),  -- Confirmed
-(5, 0, 1, 0),  -- Pending
-(6, 1, 0, 0),  -- Confirmed
-(7, 0, 1, 0),  -- Pending
-(8, 0, 0, 1),  -- Canceled
-(9, 1, 0, 0),  -- Confirmed
-(10, 0, 1, 0); -- Pending
+(3, 0, 0, 1);  -- Canceled
+
 
 INSERT INTO Booking (BookingID, StatusID, UserID, TripID, BookingDate) VALUES
-(1, 3, 7, 2, '2025-03-18'),
-(2, 1, 4, 5, '2025-05-02'),
-(3, 5, 2, 8, '2025-07-11'),
-(4, 2, 9, 1, '2025-02-28'),
-(5, 6, 1, 10, '2025-06-03'),
-(6, 4, 10, 3, '2025-08-20'),
-(7, 9, 5, 6, '2025-04-27'),
-(8, 7, 8, 4, '2025-09-15'),
-(9, 8, 3, 9, '2025-01-22'),
-(10, 10, 6, 7, '2025-10-06');
+(1, 3, 7, 2, '2025-03-18'),  -- Canceled
+(2, 1, 4, 5, '2025-05-02'),  -- Confirmed
+(3, 2, 2, 8, '2025-07-11'),  -- Pending
+(4, 2, 9, 1, '2025-02-28'),  -- Pending
+(5, 1, 1, 10, '2025-06-03'), -- Confirmed
+(6, 1, 10, 3, '2025-08-20'), -- Confirmed
+(7, 1, 5, 6, '2025-04-27'),  -- Confirmed
+(8, 2, 8, 4, '2025-09-15'),  -- Pending
+(9, 3, 3, 9, '2025-01-22'),  -- Canceled
+(10, 2, 6, 7, '2025-10-06'); -- Pending
 
 INSERT INTO Review (ReviewID, UserID, TripID, Rating, Comments) VALUES
 (1, 2, 1, 5, 'Absolutely loved the guide and the activities. Everything was perfectly arranged.'),

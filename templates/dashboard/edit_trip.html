@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Trip{% endblock %}
+
+{% block content %}
+<div class="edit-trip-container">
+    <h1>Edit Trip</h1>
+    <form method="post">
+        <label for="trip_name">Trip Name</label><br>
+        <input type="text" name="trip_name" id="trip_name" value="{{ trip.TripName }}" required><br><br>
+
+        <label for="start_date">Start Date</label><br>
+        <input type="date" name="start_date" id="start_date" value="{{ trip.StartDate }}"><br><br>
+
+        <label for="end_date">End Date</label><br>
+        <input type="date" name="end_date" id="end_date" value="{{ trip.EndDate }}"><br><br>
+
+        <label for="guide_id">Guide</label><br>
+        <select name="guide_id" id="guide_id">
+            <option value="">-- No Guide --</option>
+            {% for guide in guides %}
+                <option value="{{ guide.GuideID }}" {% if trip.GuideID == guide.GuideID %}selected{% endif %}>
+                    {{ guide.GuideName }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit" class="btn-primary">Save Changes</button>
+        <a href="{{ url_for('trips.trip_detail', trip_id=trip.TripID) }}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<style>
+.edit-trip-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+}
+.edit-trip-container input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+.btn-primary, .btn-secondary {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.btn-primary {
+    background-color: black;
+}
+.btn-secondary {
+    background-color: gray;
+}
+</style>
+{% endblock %}
