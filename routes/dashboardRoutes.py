@@ -149,6 +149,9 @@ def trip_detail(trip_id):
                 'id': activity['ActivityID']
             })
         elif activity['StartDate'] and activity['StartDate'] not in schedule_by_day:
+            # if unscheduled activity is a tuple
+            if isinstance(unscheduled_activities, tuple):
+                unscheduled_activities = list(unscheduled_activities)
             unscheduled_activities.append(activity)
 
     for accommodation in accommodations:
@@ -160,6 +163,9 @@ def trip_detail(trip_id):
                 'id': accommodation['AccommodationID']
             })
         elif accommodation['CheckInDate'] and accommodation['CheckInDate'] not in schedule_by_day:
+            # if unscheduled accommodation is a tuple
+            if isinstance(unscheduled_accommodations, tuple):
+                unscheduled_accommodations = list(unscheduled_accommodations)
             unscheduled_accommodations.append(accommodation)
 
     for transportation in transportations:
@@ -171,6 +177,9 @@ def trip_detail(trip_id):
                 'id': transportation['TransportationID']
             })
         elif transportation['StartDate'] and transportation['StartDate'] not in schedule_by_day:
+            # if unscheduled transportation is a tuple
+            if isinstance(unscheduled_transportations, tuple):
+                unscheduled_transportations = list(unscheduled_transportations)
             unscheduled_transportations.append(transportation)
     
     # Add this to preprocess unscheduled items
@@ -375,6 +384,20 @@ def edit_trip(trip_id):
 
     conn = get_db_connection()
     cursor = conn.cursor()
+    # if is published, cannot edit
+    cursor.execute("""
+        SELECT Trip.UserID, Booking.StatusID
+        FROM Trip
+        LEFT JOIN Booking ON Trip.TripID = Booking.TripID
+        WHERE Trip.TripID = %s
+    """, (trip_id,))
+    trip = cursor.fetchone()
+    if not trip or trip['UserID'] != user_id:
+        flash('You are not authorized to edit this Trip.', 'danger')
+        return redirect(url_for('trips.trips_home'))
+    if trip['StatusID'] == 1:
+        flash('Cannot edit a published Trip.', 'danger')
+        return redirect(url_for('trips.trip_detail', trip_id=trip_id))
 
     if request.method == 'POST':
         new_name = request.form.get('trip_name')

@@ -104,20 +104,32 @@
             <div class="unscheduled-items">
                 {% for item in unscheduled_activities %}
                 <p>
+                    {% if is_owner and trip.IsCanceled %}
                     [{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{
                         item.name }}</a>
+                    {% else %}
+                    [{{ item.type }}] {{ item.name }}
+                    {% endif %}
                 </p>
                 {% endfor %}
                 {% for item in unscheduled_accommodations %}
                 <p>
+                    {% if is_owner and trip.IsCanceled %}
                     [{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{
                         item.name }}</a>
+                    {% else %}
+                    [{{ item.type }}] {{ item.name }}
+                    {% endif %}
                 </p>
                 {% endfor %}
                 {% for item in unscheduled_transportations %}
                 <p>
+                    {% if is_owner and trip.IsCanceled %}
                     [{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', '{{ item.id }}')">{{
                         item.name }}</a>
+                    {% else %}
+                    [{{ item.type }}] {{ item.name }}
+                    {% endif %}
                 </p>
                 {% endfor %}
             </div>
