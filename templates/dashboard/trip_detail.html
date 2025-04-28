@@ -10,15 +10,17 @@
         <div class="trip-header" style="display: flex; align-items: center; gap: 20px;">
             <h1 style="margin: 0;">{{ trip.TripName }}</h1>
             {% if is_owner %}
-            <form method="post" action="{{ url_for('trips.delete_trip', trip_id=trip.TripID) }}" onsubmit="return confirm('Are you sure you want to delete this trip?');" style="margin: 0;">
+            <form method="post" action="{{ url_for('trips.delete_trip', trip_id=trip.TripID) }}"
+                onsubmit="return confirm('Are you sure you want to delete this trip?');" style="margin: 0;">
                 <button type="submit" class="btn-danger">Delete Trip</button>
             </form>
-            <a href="{{ url_for('trips.edit_trip', trip_id=trip.TripID) }}" class="btn-secondary" style="margin-left: 10px;">Edit Trip</a>
+            <a href="{{ url_for('trips.edit_trip', trip_id=trip.TripID) }}" class="btn-secondary"
+                style="margin-left: 10px;">Edit Trip</a>
             {% endif %}
         </div>
-        
+
         <div class="trip-meta-block">
-            <span class="trip-status">Status: 
+            <span class="trip-status">Status:
                 {% if trip.IsConfirmed %}Completed and Public
                 {% elif trip.IsPending %}Completed and Private
                 {% elif trip.IsCanceled %}Uncompleted
@@ -34,33 +36,35 @@
 
         <div class="timeline">
             {% if days %}
-                {% for day in days %}
-                    <div class="timeline-day">
-                        <div class="timeline-circle"></div>
-                        <div class="timeline-content">
-                            <h3>{{ loop.index }}. {{ day.strftime('%B %d, %Y') }}</h3>
-        
-                            {% if schedule_by_day[day] %}
-                                <ul>
-                                {% for item in schedule_by_day[day] %}
-                                    <li><strong>[{{ item.type }}]</strong> <a href="#" onclick="openEditModal('{{ item.type }}', {{ item.id }})">{{ item.name }}</a> — {{ item.description }}</li>
-                                {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p>No schedule for this day.</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+            {% for day in days %}
+            <div class="timeline-day">
+                <div class="timeline-circle"></div>
+                <div class="timeline-content">
+                    <h3>{{ loop.index }}. {{ day.strftime('%B %d, %Y') }}</h3>
+
+                    {% if schedule_by_day[day] %}
+                    <ul>
+                        {% for item in schedule_by_day[day] %}
+                        <li><strong>[{{ item.type }}]</strong> <a href="#"
+                                onclick="openEditModal('{{ item.type }}', {{ item.id }})">{{ item.name }}</a> — {{
+                            item.description }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No schedule for this day.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
             {% else %}
-                <p>No scheduled activities yet.</p>
+            <p>No scheduled activities yet.</p>
             {% endif %}
         </div>
-        
+
 
         <div class="trip-footer">
             <div class="expense-info">
-                <span class="expense-icon">$</span> 
+                <span class="expense-icon">$</span>
                 <span>Total Expense: {{ total_expense.Amount if total_expense else '0.00' }}</span>
             </div>
 
@@ -75,30 +79,35 @@
             </div>
             {% else %}
             <div class="trip-actions">
-                <form method="post" action="{{ url_for('trips.post_review', trip_id=trip.TripID) }}" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="text" name="review_content" placeholder="Write a review..." required style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                <form method="post" action="{{ url_for('trips.post_review', trip_id=trip.TripID) }}"
+                    style="display: flex; align-items: center; gap: 10px;">
+                    <input type="text" name="review_content" placeholder="Write a review..." required
+                        style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
                     <button class="btn-primary" type="submit">Post Review</button>
                 </form>
-            </div>            
+            </div>
             {% endif %}
         </div>
     </div>
 
-    
+
     <div class="trip-sidebar">
-        
+
         {% if is_owner %}
         <div class="sidebar-section">
             <h2>Unscheduled Items</h2>
             <div class="unscheduled-items">
                 {% for item in unscheduled_activities %}
-                    <p>[{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', {{ item.id }})">{{ item.name }}</a></p>
+                <p>[{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', {{ item.id }})">{{ item.name
+                        }}</a></p>
                 {% endfor %}
                 {% for item in unscheduled_accommodations %}
-                    <p>[{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', {{ item.id }})">{{ item.name }}</a></p>
+                <p>[{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', {{ item.id }})">{{ item.name
+                        }}</a></p>
                 {% endfor %}
                 {% for item in unscheduled_transportations %}
-                    <p>[{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', {{ item.id }})">{{ item.name }}</a></p>
+                <p>[{{ item.type }}] <a href="#" onclick="openEditModal('{{ item.type }}', {{ item.id }})">{{ item.name
+                        }}</a></p>
                 {% endfor %}
             </div>
         </div>
@@ -126,26 +135,33 @@
             <h2>Author Recommendation</h2>
             <div class="recommendation-items">
                 {% if unscheduled_activities %}
-                    {% for item in unscheduled_activities %}
-                        <p><strong>[Activity]</strong> {{ item.ActivityName }}</p>
-                    {% endfor %}
+                {% for item in unscheduled_activities %}
+                <p><strong>[Activity]</strong> {{ item.ActivityName }}</p>
+                {% endfor %}
                 {% else %}
-                    <p>No recommendation available.</p>
+                <p>No recommendation available.</p>
                 {% endif %}
             </div>
         </div>
-        
+
         <div class="sidebar-section">
             <h2>Related Trips</h2>
             <div class="related-trips">
                 {% if related_trips %}
-                    <ul>
-                        {% for trip in related_trips %}
-                        <li><a href="{{ url_for('trips.trip_detail', trip_id=trip.TripID) }}">{{ trip.TripName }}</a> - {{ trip.StartDate.strftime('%B %d, %Y') }} to {{ trip.EndDate.strftime('%B %d, %Y') }}</li>
-                        {% endfor %}
-                    </ul>
+                <ul>
+                    {% for trip in related_trips %}
+                    <li>
+                        <a href="{{ url_for('trips.trip_detail', trip_id=trip.TripID) }}">{{ trip.TripName }}</a> -
+                        {% if trip.StartDate and trip.EndDate %}
+                        {{ trip.StartDate.strftime('%B %d, %Y') }} to {{ trip.EndDate.strftime('%B %d, %Y') }}
+                        {% else %}
+                        Unknown Dates
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
                 {% else %}
-                    <p>No related trips available.</p>
+                <p>No related trips available.</p>
                 {% endif %}
             </div>
         </div>
@@ -154,207 +170,207 @@
             <h2>Reviews</h2>
             <div class="reviews-list">
                 {% if reviews %}
-                    <ul>
-                        {% for review in reviews %}
-                            <li>{{ review.Comments }}</li>
-                        {% endfor %}
-                    </ul>
+                <ul>
+                    {% for review in reviews %}
+                    <li>{{ review.Comments }}</li>
+                    {% endfor %}
+                </ul>
                 {% else %}
-                    <p>No reviews yet.</p>
+                <p>No reviews yet.</p>
                 {% endif %}
             </div>
         </div>
-        
+
         {% endif %}
     </div>
 
-    <div id="editModal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:white; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:1000;">
+    <div id="editModal"
+        style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:white; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:1000;">
         <h3>Edit Item</h3>
         <form id="editForm">
             <input type="hidden" name="item_type" id="item_type">
             <input type="hidden" name="item_id" id="item_id">
-    
+
             <label>Name:</label>
             <input type="text" id="edit_name" name="name" required><br><br>
-    
+
             <label>Description:</label>
             <input type="text" id="edit_description" name="description"><br><br>
-    
+
             <label>Start Date:</label>
             <input type="date" id="edit_start_date" name="start_date"><br><br>
-    
+
             <button type="button" onclick="submitEditForm()">Save</button>
             <button type="button" onclick="closeEditModal()">Cancel</button>
         </form>
-    </div>    
+    </div>
 
 </div>
 
 <style>
-.trip-detail-container {
-    display: flex;
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 20px;
-    gap: 40px;
-}
+    .trip-detail-container {
+        display: flex;
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 20px;
+        gap: 40px;
+    }
 
-.trip-main {
-    flex: 0 0 65%;
-}
+    .trip-main {
+        flex: 0 0 65%;
+    }
 
-.trip-sidebar {
-    flex: 0 0 35%;
-    max-height: 80vh;
-    overflow-y: auto;
-    border-left: 1px solid #ddd;
-    padding-left: 20px;
-}
+    .trip-sidebar {
+        flex: 0 0 35%;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-left: 1px solid #ddd;
+        padding-left: 20px;
+    }
 
-.trip-header h1 {
-    font-size: 32px;
-}
+    .trip-header h1 {
+        font-size: 32px;
+    }
 
-.trip-status {
-    margin-left: 20px;
-    font-size: 18px;
-    color: gray;
-}
+    .trip-status {
+        margin-left: 20px;
+        font-size: 18px;
+        color: gray;
+    }
 
-.trip-meta {
-    font-size: 14px;
-    color: gray;
-}
+    .trip-meta {
+        font-size: 14px;
+        color: gray;
+    }
 
-.timeline {
-    margin-top: 40px;
-    border-left: 2px solid black;
-    padding-left: 20px;
-}
+    .timeline {
+        margin-top: 40px;
+        border-left: 2px solid black;
+        padding-left: 20px;
+    }
 
-.timeline-day {
-    position: relative;
-    margin-bottom: 30px;
-}
+    .timeline-day {
+        position: relative;
+        margin-bottom: 30px;
+    }
 
-.timeline-circle {
-    width: 14px;
-    height: 14px;
-    background: white;
-    border: 2px solid black;
-    border-radius: 50%;
-    position: absolute;
-    left: -30px;
-    top: 0;
-}
+    .timeline-circle {
+        width: 14px;
+        height: 14px;
+        background: white;
+        border: 2px solid black;
+        border-radius: 50%;
+        position: absolute;
+        left: -30px;
+        top: 0;
+    }
 
-.timeline-content ul {
-    padding-left: 20px;
-    list-style-type: disc;
-}
+    .timeline-content ul {
+        padding-left: 20px;
+        list-style-type: disc;
+    }
 
-.timeline-content li {
-    margin-bottom: 6px;
-}
+    .timeline-content li {
+        margin-bottom: 6px;
+    }
 
-.trip-footer {
-    margin-top: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    .trip-footer {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.expense-info {
-    font-size: 18px;
-    font-weight: bold;
-}
+    .expense-info {
+        font-size: 18px;
+        font-weight: bold;
+    }
 
-.trip-actions button {
-    margin-left: 10px;
-}
+    .trip-actions button {
+        margin-left: 10px;
+    }
 
-.btn-primary {
-    background: black;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-}
+    .btn-primary {
+        background: black;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
 
-.btn-secondary {
-    background: gray;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-}
+    .btn-secondary {
+        background: gray;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
 
-.sidebar-section {
-    margin-bottom: 40px;
-}
+    .sidebar-section {
+        margin-bottom: 40px;
+    }
 
-.sidebar-section h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
+    .sidebar-section h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
 
-.sidebar-section form {
-    display: flex;
-    flex-direction: column;
-    align-items: left;
-}
-.sidebar-section form input, form select {
-    width: 80%;
-    margin-bottom: 12px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-}
+    .sidebar-section form {
+        display: flex;
+        flex-direction: column;
+        align-items: left;
+    }
 
-.sidebar-section form button{
-    width: 80%; 
-    background: black;
-    color: white;
-    border: none;
-    padding: 12px 0;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 10px;
-}
+    .sidebar-section form input,
+    form select {
+        width: 80%;
+        margin-bottom: 12px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+    }
 
-.btn-danger {
-    background: #ccc;
-    color: rgb(0, 0, 0);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-}
+    .sidebar-section form button {
+        width: 80%;
+        background: black;
+        color: white;
+        border: none;
+        padding: 12px 0;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
 
-.trip-meta-block {
-    margin-top: 10px;
-}
+    .btn-danger {
+        background: #ccc;
+        color: rgb(0, 0, 0);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
 
-.trip-status {
-    font-size: 18px;
-    font-weight: bold;
-    color: gray;
-    display: block;
-    margin-bottom: 5px;
-}
+    .trip-meta-block {
+        margin-top: 10px;
+    }
 
-.trip-meta {
-    font-size: 14px;
-    color: gray;
-    line-height: 1.5;
-}
+    .trip-status {
+        font-size: 18px;
+        font-weight: bold;
+        color: gray;
+        display: block;
+        margin-bottom: 5px;
+    }
 
-
-
+    .trip-meta {
+        font-size: 14px;
+        color: gray;
+        line-height: 1.5;
+    }
 </style>
 
 <script>
@@ -362,7 +378,7 @@
         document.getElementById('editModal').style.display = 'block';
         document.getElementById('item_type').value = type;
         document.getElementById('item_id').value = id;
-    
+
         fetch(`/trips/{{ trip.TripID }}/get_item_detail?type=${type}&id=${id}`)
             .then(response => response.json())
             .then(data => {
@@ -375,36 +391,36 @@
                 console.error(error);
             });
     }
-    
+
     function closeEditModal() {
         document.getElementById('editModal').style.display = 'none';
     }
-    
+
     function submitEditForm() {
-        const tripId = {{ trip.TripID }};
-        const itemType = document.getElementById('item_type').value;
-        const itemId = document.getElementById('item_id').value;
-        const name = document.getElementById('edit_name').value;
-        const description = document.getElementById('edit_description').value;
-        const startDate = document.getElementById('edit_start_date').value;
-    
-        fetch(`/trips/${tripId}/update_item/${itemType}/${itemId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name, description, start_date: startDate })
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert('Failed to update item.');
-            }
-        }).catch(error => {
-            console.error(error);
-            alert('Error updating item.');
-        });
-    }
-    </script>
-    
+    const tripId = {{ trip.TripID }};
+    const itemType = document.getElementById('item_type').value;
+    const itemId = document.getElementById('item_id').value;
+    const name = document.getElementById('edit_name').value;
+    const description = document.getElementById('edit_description').value;
+    const startDate = document.getElementById('edit_start_date').value;
+
+    fetch(`/trips/${tripId}/update_item/${itemType}/${itemId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, description, start_date: startDate })
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Failed to update item.');
+        }
+    }).catch(error => {
+        console.error(error);
+        alert('Error updating item.');
+    });
+}
+</script>
+
 {% endblock %}
