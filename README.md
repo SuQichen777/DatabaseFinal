@@ -30,7 +30,7 @@ You can run `python src/dbSecurity/testIdentity.py` to test whether the database
 python app.py
 ```
 
-- The application will be available at `http://localhost:5000/` by default.
+- The application will be available at `http://127.0.0.1:5000/` by default.
     
 
 ### Setting Up the Initial Database
