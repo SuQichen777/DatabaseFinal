@@ -18,7 +18,7 @@
                 {% for trip in trips %}
                     <a href="{{ url_for('trips.trip_detail', trip_id=trip.TripID) }}" class="collection-card">
                         <h4>{{ trip.TripName }}</h4>
-                        <p>By {{ user.Name }}</p> 
+                        <p>By {{ trip.UserName }}</p> 
                     </a>
                 {% endfor %}
             </div>

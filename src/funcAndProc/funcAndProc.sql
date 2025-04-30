@@ -198,9 +198,10 @@ END;
 DROP PROCEDURE IF EXISTS sp_get_collected_trips_by_user;
 CREATE PROCEDURE sp_get_collected_trips_by_user (IN p_UserID INT)
 BEGIN
-    SELECT DISTINCT Trip.*
+    SELECT DISTINCT Trip.*, Users.Name AS UserName
     FROM Review
     JOIN Trip ON Review.TripID = Trip.TripID
+    JOIN Users ON Trip.UserID = Users.UserID
     WHERE Review.UserID = p_UserID;
 END;
 

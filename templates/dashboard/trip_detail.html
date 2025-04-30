@@ -403,12 +403,25 @@
         const formFields = document.getElementById('dynamicFormFields');
         formFields.innerHTML = '';
 
-        formFields.innerHTML += `
-        <label>Name:</label>
-        <input type="text" id="edit_name" name="name" required><br><br>
+        if (type === 'Accommodation'){
+            formFields.innerHTML += `
+            <label>Hotel Name:</label>
+            <input type="text" id="edit_name" name="name" required disabled>
+            <br><br>
+            <label>Description:</label>
+            <input type="text" id="edit_description" name="description" disabled><br><br>
+            `
+        } else if (type === 'Transportation' || type === 'Activity') {
+            formFields.innerHTML += `
+            <label>Name:</label>
+            <input type="text" id="edit_name" name="name" required>
+            <label>Description:</label>
+            <input type="text" id="edit_description" name="description"><br><br>
+            `
+            
+        }
 
-        <label>Description:</label>
-        <input type="text" id="edit_description" name="description"><br><br>
+        formFields.innerHTML += `
 
         <label>Start Date:</label>
         <input type="date" id="edit_start_date" name="start_date"><br><br>
