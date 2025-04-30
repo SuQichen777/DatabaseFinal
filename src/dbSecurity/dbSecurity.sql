@@ -1,8 +1,8 @@
 CREATE USER 'app_user'@'%' IDENTIFIED BY 'STRONG_APP_USER_PWD';
 CREATE USER 'developer'@'%' IDENTIFIED BY 'STRONG_DEV_PWD';
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON `TripPlannerDB`.* TO 'app_user'@'%';
-GRANT ALL PRIVILEGES ON `TripPlannerDB`.* TO 'developer'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE ON `railway`.* TO 'app_user'@'%';
+GRANT ALL PRIVILEGES ON `railway`.* TO 'developer'@'%';
 
 FLUSH PRIVILEGES;
 
